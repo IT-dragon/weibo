@@ -7,8 +7,6 @@ import tyc.project4.pojo.MessageCode;
 import tyc.project4.pojo.User;
 import tyc.project4.service.UserService;
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
@@ -22,19 +20,17 @@ import java.util.Map;
 public class UserController {
     @Resource
     UserService userService;
+
     /**
      * 1.登录
-     * @param msg
+     * @param name
+     * @param pwd
      * @return
      */
     @PostMapping(value = "/login")
     @ResponseBody
-    public Message login(@RequestParam("name") String name, @RequestParam("pwd") String pwd, HttpServletRequest request){
+    public Message login(@RequestParam("name") String name, @RequestParam("pwd") String pwd){
         Message message=new Message();
-        HttpSession session=request.getSession();
-        if (session==null){
-            return  message.setLoginFailMessage("登录失败:session异常!");
-        }
         if (StringUtils.isBlank(name)|StringUtils.isBlank(pwd)){
             return  message.setLoginFailMessage("登录失败:信息输入并不完整!");
         }
@@ -45,8 +41,6 @@ public class UserController {
             Map<String,Object> map=new HashMap<>();
             map.put("info",userLogin);
             message.setData(map);
-            session.setAttribute("info",userLogin.getId()+"-"+userLogin.getName());
-            session.setMaxInactiveInterval(60 * 60 * 3);
            return message;
         }else {
             message.setLoginFailMessage("登录失败:信息输入有误!");
@@ -200,15 +194,15 @@ public class UserController {
         message.setData(map);
         return message.setSuccessMessage("取关成功");
     }
-
-    /**
-     * 2.注销
-     * @param session
-     */
-    @GetMapping("/logout")
-    public void logout(HttpSession session){
-        session.removeAttribute("user");
-    }
+//
+//    /**
+//     * 2.注销
+//     * @param session
+//     */
+//    @GetMapping("/logout")
+//    public void logout(HttpSession session){
+//        session.removeAttribute("user");
+//    }
 
     /**
      * 跳转到first页面
